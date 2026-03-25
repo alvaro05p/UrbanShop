@@ -1,97 +1,53 @@
 import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ShoppingBag, Search, X, AlignRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-
-const NAV_LINKS = [
-  { label: 'Sneakers', href: '#sneakers' },
-  { label: 'Apparel',  href: '#apparel'  },
-  { label: 'Drops',    href: '#drops'    },
-];
-
-/* ─── Sub-componentes ─── */
-
-const Logo = () => (
-  <a href="/" className="header__logo" aria-label="UrbanShop — Inicio">
-    Urban<span className="header__logo-highlight">Shop</span>
-  </a>
-);
-
-const NavDesktop = () => (
-  <nav className="header__nav" aria-label="Navegación principal">
-    <ul className="header__nav-list" role="list">
-      {NAV_LINKS.map(({ label, href }) => (
-        <li key={href}>
-          <a href={href} className="header__nav-link">{label}</a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-);
-
-const CartButton = ({ count }) => (
-  <button className="header__icon-btn" aria-label={`Carrito — ${count} artículos`}>
-    <ShoppingBag className="icon" aria-hidden="true" />
-    {count > 0 && (
-      <span className="cart-badge" aria-live="polite">{count}</span>
-    )}
-  </button>
-);
-
-const SearchButton = () => (
-  <button className="header__icon-btn" aria-label="Buscar">
-    <Search className="icon" aria-hidden="true" />
-  </button>
-);
-
-const MobileMenuButton = ({ isOpen, onToggle }) => (
-  <button
-    className="header__icon-btn header__menu-toggle"
-    aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
-    aria-expanded={isOpen}
-    onClick={onToggle}
-  >
-    {isOpen
-      ? <X className="icon" aria-hidden="true" />
-      : <AlignRight className="icon" aria-hidden="true" />
-    }
-  </button>
-);
-
-const NavMobile = ({ isOpen, onClose }) => (
-  <div className={`header__mobile-menu ${isOpen ? 'header__mobile-menu--open' : ''}`} aria-hidden={!isOpen}>
-    <nav aria-label="Menú móvil">
-      <ul role="list">
-        {NAV_LINKS.map(({ label, href }) => (
-          <li key={href}>
-            <a href={href} className="header__mobile-link" onClick={onClose}>
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  </div>
-);
-
-/* ─── Componente principal ─── */
+import CartDrawer from './CartDrawer'; // <--- Importamos el modal
 
 const Header = () => {
   const { cartCount } = useCart();
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return (
-    <header className="header" role="banner">
-      <div className="header__inner">
-        <Logo />
-        <NavDesktop />
-        <div className="header__actions">
-          <SearchButton />
-          <CartButton count={cartCount} />
-          <MobileMenuButton isOpen={menuOpen} onToggle={() => setMenuOpen(v => !v)} />
+    <>
+      <header className="header">
+        <div className="header__inner">
+          <Link to="/" className="header__logo">
+            Urban<span className="header__logo-highlight">Shop</span>
+          </Link>
+
+          <nav className="header__nav">
+            <ul className="header__nav-list">
+              <li><Link to="/?cat=Footwear" className="header__nav-link">Sneakers</Link></li>
+              <li><Link to="/?cat=Apparel" className="header__nav-link">Apparel</Link></li>
+              <li><Link to="/?cat=Accessories" className="header__nav-link">Drops</Link></li>
+            </ul>
+          </nav>
+
+          <div className="header__actions">
+            <button className="header__icon-btn"><Search size={20} /></button>
+            
+            {/* Botón del Carrito */}
+            <button 
+              className="header__icon-btn header__cart-trigger" 
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingBag size={20} />
+              {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+            </button>
+
+            <button className="header__icon-btn header__menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? <X /> : <AlignRight />}
+            </button>
+          </div>
         </div>
-      </div>
-      <NavMobile isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-    </header>
+      </header>
+
+      {/* Renderizamos el Drawer aquí */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </>
   );
 };
 

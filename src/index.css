@@ -636,3 +636,40 @@ button { font: inherit; cursor: pointer; background: none; border: none; }
   .hero__inner        { padding: var(--gap-lg) var(--gap-md) var(--gap-md); }
   .catalog__header    { flex-direction: column; align-items: flex-start; }
 }
+
+.header__search-container {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.header__search-container.is-open {
+  background: #f5f5f5;
+  border-bottom: 1px solid #000;
+  padding: 0 10px;
+}
+
+.header__search-input {
+  width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  transition: width 0.3s ease;
+  padding: 0;
+}
+
+.header__search-container.is-open .header__search-input {
+  width: 150px;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .header__search-container.is-open .header__search-input {
+    width: 100px;
+  }
+}

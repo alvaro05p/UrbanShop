@@ -1,8 +1,12 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import ProductList from './components/ProductList';
+import ProductDetail from './components/ProductDetail';
 import Footer from './components/Footer';
+import { CartProvider } from './context/CartContext';
 
-/* ─── Hero Banner ─── */
+/* ─── Sub-componentes de la Home ─── */
 
 const HeroBanner = () => (
   <div className="hero" aria-label="Banner principal">
@@ -24,8 +28,6 @@ const HeroBanner = () => (
   </div>
 );
 
-/* ─── Section Header ─── */
-
 const CatalogHeader = () => (
   <div className="catalog__header">
     <h2 className="catalog__title">
@@ -41,26 +43,41 @@ const CatalogHeader = () => (
   </div>
 );
 
-/* ─── App Root ─── */
+/* ─── Vista de Inicio ─── */
+const Home = () => (
+  <>
+    <HeroBanner />
+    <section className="catalog" aria-labelledby="catalog-title">
+      <div className="catalog__inner">
+        <CatalogHeader />
+        <ProductList />
+      </div>
+    </section>
+  </>
+);
 
+/* ─── App Root ─── */
 function App() {
   return (
-    <div className="app">
-      <Header />
+    <CartProvider>
+      <Router>
+        <div className="app">
+          <Header />
 
-      <main id="main-content" className="app__main">
-        <HeroBanner />
+          <main id="main-content" className="app__main">
+            <Routes>
+              {/* Ruta principal: Muestra el Hero y el Catálogo */}
+              <Route path="/" element={<Home />} />
+              
+              {/* Ruta de detalle: Muestra solo el producto en grande */}
+              <Route path="/product/:id" element={<ProductDetail />} />
+            </Routes>
+          </main>
 
-        <section className="catalog" aria-labelledby="catalog-title">
-          <div className="catalog__inner">
-            <CatalogHeader />
-            <ProductList />
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+          <Footer />
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 
